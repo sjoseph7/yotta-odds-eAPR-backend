@@ -86,7 +86,7 @@ app.use("/api/v1/prize-data", prizeData);
 app.use(errorHandler);
 
 // Set up prize table data retrieval
-periodicallyScrapePrizeTable(1000 * 60 * 60); // Once per hour
+periodicallyScrapePrizeTable(1000 * 60 * 15); // Once per 15 minutes
 
 // "Home" request
 app.get("/", (req: Request, res: Response) => {

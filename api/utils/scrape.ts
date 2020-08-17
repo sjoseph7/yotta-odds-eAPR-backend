@@ -5,7 +5,7 @@ import { PrizeTable } from "../models/PrizeTable";
 const officialRulesUrl = "https://www.withyotta.com/official-rules";
 
 export const periodicallyScrapePrizeTable = (interval: number) => {
-  setTimeout(async () => {
+  setInterval(async () => {
     // Get data from yotta's official rules page
     const res = await axios.get(officialRulesUrl);
 
@@ -27,7 +27,7 @@ export const periodicallyScrapePrizeTable = (interval: number) => {
     });
 
     return prizeTableRows;
-  }, 0);
+  }, interval);
 };
 
 const getPrizeTableFromDom = function (DOM: any) {

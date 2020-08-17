@@ -85,7 +85,7 @@ app.use("/api/v1/prize-data", prizeData);
 // Handle errors
 app.use(errorHandler);
 
-// Set up odds retrieval
+// Set up prize table data retrieval
 periodicallyScrapePrizeTable(1000 * 60 * 60); // Once per hour
 
 // "Home" request

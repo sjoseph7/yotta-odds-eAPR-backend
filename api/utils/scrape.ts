@@ -12,7 +12,7 @@ export const periodicallyScrapePrizeTable = (interval: number) => {
     // Convert into Document Object
     const DOM = new JSDOM(res.data, {
       contentType: "text/html",
-      runScripts: "outside-only"
+      runScripts: "outside-only",
     });
 
     // Get prize table data
@@ -23,7 +23,7 @@ export const periodicallyScrapePrizeTable = (interval: number) => {
 
     // Save prize table
     await PrizeTable.create({
-      rows: prizeTableRows
+      rows: prizeTableRows,
     });
 
     return prizeTableRows;
@@ -59,7 +59,7 @@ const extractRowsFromPrizeTable = function (prizeTable: Element) {
         "Matching Yotta Ball",
         "Number of Matching Numbers",
         "Prize*",
-        "Odds"
+        "Odds",
       ].includes(childNode.textContent)
     ) {
       tableBodyData.push(childNode.textContent); // Remove excess html
@@ -73,33 +73,26 @@ const extractRowsFromPrizeTable = function (prizeTable: Element) {
       tableBodyData[i],
       tableBodyData[i + 1],
       tableBodyData[i + 2],
-      tableBodyData[i + 3]
+      tableBodyData[i + 3],
     ];
     tableRows.push(tableRow);
   }
 
   function getDataFromTableRows(tableRows: string[][]) {
-    const data = tableRows.map(tableRow => {
+    const data = tableRows.map((tableRow) => {
       const [hasYotta, matchingNumbers, prize, odds] = tableRow;
       console.info([hasYotta, matchingNumbers, prize, odds]);
       return {
         yotta: hasYotta === "Yes",
         shared: !prize.includes("per ticket"),
         matches: parseInt(matchingNumbers.split(" of ")[0]),
-        annuity: prize.includes("**") ? 40 : 0, // years
+        annuity: prize.includes("**") && !prize.includes("Tesla") ? 40 : 0, // years
         // Prize is in cents, USD
-        prize: prize.includes("**")
-          ? 5800000 * 100 // TODO: fix 40 year annuity calculation
-          : parseInt(
-              (
-                parseFloat(prize.slice(1).split(" per ")[0].replace(/,/g, "")) *
-                100
-              ).toString()
-            ),
+        prize: determinePrizeValue(prize),
         odds: {
           numerator: parseInt(odds.split(":")[0]),
-          denominator: parseInt(odds.split(":")[1].replace(/,/g, ""))
-        }
+          denominator: parseInt(odds.split(":")[1].replace(/,/g, "")),
+        },
       };
     });
     return data;
@@ -109,4 +102,16 @@ const extractRowsFromPrizeTable = function (prizeTable: Element) {
   const data = getDataFromTableRows(tableRows);
   console.info("Captured Data:", data);
   return data;
+};
+
+const determinePrizeValue = (prize: string) => {
+  return prize.includes("**")
+    ? prize.includes("Tesla")
+      ? 37990 // Current MSRP of Tesla (and value from Yotta's site)
+      : 5800000 * 100 // TODO: fix 40 year annuity calculation
+    : parseInt(
+        (
+          parseFloat(prize.slice(1).split(" per ")[0].replace(/,/g, "")) * 100
+        ).toString()
+      );
 };

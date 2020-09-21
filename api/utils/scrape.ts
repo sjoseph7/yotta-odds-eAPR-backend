@@ -107,7 +107,7 @@ const extractRowsFromPrizeTable = function (prizeTable: Element) {
 const determinePrizeValue = (prize: string) => {
   return prize.includes("**")
     ? prize.includes("Tesla")
-      ? 37990 // Current MSRP of Tesla (and value from Yotta's site)
+      ? 37990 * 100 // Current MSRP of Tesla (and value from Yotta's site), in cents USD
       : 5800000 * 100 // TODO: fix 40 year annuity calculation
     : parseInt(
         (

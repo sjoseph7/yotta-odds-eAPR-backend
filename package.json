@@ -1,7 +1,7 @@
 {
   "name": "yotta-odds-eapr-backend",
   "version": "1.0.0",
-  "description": "Starter files for a Mongoose, Node.js, Express, and Typescript API project",
+  "description": "Historical Yotta sweepstakes odds API",
   "main": "server.js",
   "scripts": {
     "build": "tsc",
